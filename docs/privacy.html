@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — MNIT Media Grabber</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #222; line-height: 1.7; }
+    h1 { font-size: 1.6rem; border-bottom: 2px solid #2563eb; padding-bottom: 8px; }
+    h2 { font-size: 1.1rem; margin-top: 2rem; color: #1e40af; }
+    a { color: #2563eb; }
+    footer { margin-top: 3rem; font-size: 0.85rem; color: #666; border-top: 1px solid #ddd; padding-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p><strong>MNIT Media Grabber</strong> — Chrome Extension<br>
+  Last updated: October 2, 2026</p>
+
+  <h2>Summary</h2>
+  <p>MNIT Media Grabber does <strong>not collect, store, or transmit any personal data</strong> to any external server. Everything stays on your device.</p>
+
+  <h2>What the extension does</h2>
+  <p>The extension detects media URLs (video and audio) on the web pages you visit and displays them in the side panel so you can download them. It uses Chrome's built-in download API to save files directly to your computer.</p>
+
+  <h2>Data we collect</h2>
+  <p><strong>None.</strong> Specifically:</p>
+  <ul>
+    <li>No personal information is collected.</li>
+    <li>No browsing history is recorded or stored beyond the current browser session.</li>
+    <li>Detected media URLs are stored in <code>chrome.storage.session</code> — they are cleared automatically when the browser closes.</li>
+    <li>No analytics, telemetry, or crash reporting tools are used.</li>
+    <li>No data is sent to any server operated by the developer or any third party.</li>
+  </ul>
+
+  <h2>Permissions used and why</h2>
+  <ul>
+    <li><strong>webRequest, webNavigation</strong> — to detect media network requests on the current tab.</li>
+    <li><strong>storage</strong> — to temporarily hold detected media items during your session.</li>
+    <li><strong>downloads</strong> — to save files to your computer.</li>
+    <li><strong>sidePanel</strong> — to show the extension UI as a Chrome side panel.</li>
+    <li><strong>scripting</strong> — to scan the page for &lt;video&gt; and &lt;audio&gt; elements.</li>
+    <li><strong>declarativeNetRequestWithHostAccess</strong> — to set the Referer header required by some media servers.</li>
+    <li><strong>host_permissions (&lt;all_urls&gt;)</strong> — required to intercept media requests on any website.</li>
+  </ul>
+  <p>None of these permissions are used to collect data about you.</p>
+
+  <h2>Third-party services</h2>
+  <p>This extension does not use any third-party services, SDKs, or APIs.</p>
+
+  <h2>Children's privacy</h2>
+  <p>This extension is not directed at children under 13 and does not knowingly collect data from them.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy is updated, the "Last updated" date above will change. The extension is a personal tool and changes are rare.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy: <a href="mailto:vladimirglazman@gmail.com">vladimirglazman@gmail.com</a></p>
+
+  <footer>
+    <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp;
+    <a href="https://github.com/vladimirglazman-rgb/mnit-media-grabber">GitHub</a>
+  </footer>
+</body>
+</html>
