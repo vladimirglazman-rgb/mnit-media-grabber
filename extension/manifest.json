@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "MNIT Media Grabber",
+  "version": "1.7.0",
+  "description": "Personal tool: detects video/audio on the open page and downloads it.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "downloads",
+    "webRequest",
+    "webNavigation",
+    "scripting",
+    "declarativeNetRequestWithHostAccess",
+    "unlimitedStorage"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "MNIT Media Grabber",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

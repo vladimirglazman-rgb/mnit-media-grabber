@@ -1,0 +1,32 @@
+const { chromium } = await import(process.env.PW || '/opt/node-tools/node_modules/playwright/index.mjs');
+import { rmSync, mkdirSync } from 'node:fs'; rmSync('/tmp/mg-test-profile', { recursive: true, force: true }); 
+const ext = new URL('../extension', import.meta.url).pathname;
+const ctx = await chromium.launchPersistentContext('/tmp/mg-test-profile', { channel:'chromium', headless:true, acceptDownloads:true,
+  args:[`--disable-extensions-except=${ext}`, `--load-extension=${ext}`, '--host-resolver-rules=MAP vod-adaptive-ak.vimeocdn.com 127.0.0.1', '--no-proxy-server'] });
+let [sw] = ctx.serviceWorkers(); if (!sw) sw = await ctx.waitForEvent('serviceworker');
+const id = sw.url().split('/')[2];
+await new Promise(r=>setTimeout(r,1500));
+const page = await ctx.newPage();
+await page.goto('http://localhost:8123/vhls.html'); await page.waitForTimeout(2500);
+const tabId = await sw.evaluate(async () => (await chrome.tabs.query({url:'http://localhost:8123/*'}))[0].id);
+const data = await sw.evaluate(async (t) => (await chrome.storage.session.get('tab_'+t))['tab_'+t], tabId);
+console.log('DETECTED', JSON.stringify(data.items.map(i=>({kind:i.kind,url:i.url.split('/').pop(),variants:i.variants?.map(v=>v.resolution),dur:i.duration}))));
+await sw.evaluate(() => chrome.storage.local.set({settings:{minSizeKB:0,lang:'he'}}));
+const errors=[]; const panel = await ctx.newPage();
+panel.on('pageerror', e => errors.push(e.message)); panel.on('console', m => m.type()==='error' && errors.push(m.text()));
+await panel.addInitScript((t) => { const q = chrome.tabs.query.bind(chrome.tabs); chrome.tabs.query = async (o) => o.active ? [await chrome.tabs.get(t)] : q(o); }, tabId);
+await panel.goto(`chrome-extension://${id}/sidepanel.html`); await panel.waitForTimeout(1000);
+await panel.setViewportSize({width:480,height:640});
+const t0=Date.now();
+await panel.locator('.item .btn.primary').first().click();
+await panel.waitForFunction(() => /✓|נכשל/.test(document.querySelector('.item .status').textContent), null, {timeout:120000});
+console.log('RESULT', await panel.locator('.item .status').first().textContent(), (Date.now()-t0)+'ms');
+await panel.screenshot({path:'shot-vimeo.png'});
+await panel.waitForTimeout(1500);
+const dls = await sw.evaluate(async () => (await chrome.downloads.search({})).map(d => ({f:d.filename, s:d.state, b:d.fileSize, n:d.byFilenameOrUrl})));
+console.log('DL', JSON.stringify(dls));
+const {execSync}=await import('child_process');
+for (const d of dls) { execSync(`cp ${d.f} out-vhls.mp4`); console.log(execSync(`ffprobe -v error -show_entries format=duration:stream=codec_type,codec_name -of csv=p=0 out-vhls.mp4; ffmpeg -v error -i out-vhls.mp4 -f null - 2>&1 | head -5`).toString()); }
+const opfs = await panel.evaluate(async()=>{const r=await navigator.storage.getDirectory(); const n=[]; for await (const k of r.keys()) n.push(k); return n;});
+console.log('OPFS left', opfs, 'ERRORS', errors);
+await ctx.close();

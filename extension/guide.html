@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MNIT Media Grabber — מדריך</title>
+<style>
+  :root {
+    --bg: #eef3fa; --card: #ffffff; --text: #14213d; --muted: #5b6b84; --border: #d6dfeb;
+    --accent: #1d4ed8; --accent-soft: #dbe7ff; --ok: #15803d; --warn-bg: #fff7e0; --warn: #8a5a00;
+    --mock-bg: #f6f8fb; --mock-bar: #e9edf3; --ring: #f97316;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1726; --card: #182235; --text: #e8eef8; --muted: #9fb0c8; --border: #2b3a55;
+      --accent: #5b8cff; --accent-soft: #22335a; --ok: #4ade80; --warn-bg: #3a2f12; --warn: #fcd34d;
+      --mock-bg: #111a2b; --mock-bar: #1d2940;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI", system-ui, Arial, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  header.top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  header.top img { width: 56px; height: 56px; border-radius: 12px; }
+  header.top h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+  header.top .sub { color: var(--muted); font-size: 14px; }
+
+  .progress-wrap { margin-bottom: 14px; }
+  .progress-text { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); margin-bottom: 6px; }
+  .progress { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--accent); transition: width .3s; }
+
+  nav.sections { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  nav.sections button {
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer;
+  }
+  nav.sections button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step { background: var(--card); border-radius: 14px; box-shadow: 0 2px 10px rgba(20,33,61,.08); overflow: hidden; }
+  .step-grid { display: grid; grid-template-columns: 1fr 1.15fr; }
+  @media (max-width: 760px) { .step-grid { grid-template-columns: 1fr; } }
+  .text { padding: 24px; }
+  .num { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;
+         background: var(--accent); color: #fff; font-weight: 700; font-size: 18px; margin-bottom: 10px; }
+  .text h2 { margin: 0 0 12px; font-size: 22px; line-height: 1.3; }
+  .text ol, .text ul { padding-inline-start: 22px; margin: 0 0 12px; }
+  .text li { margin-bottom: 6px; }
+  .tip { background: var(--accent-soft); border-radius: 10px; padding: 10px 14px; font-size: 15px; margin-top: 12px; }
+  .warn { background: var(--warn-bg); color: var(--warn); border-radius: 10px; padding: 10px 14px; font-size: 15px; margin-top: 12px; }
+  .done-check { color: var(--ok); font-weight: 600; margin-top: 12px; }
+  code, .kbd { direction: ltr; unicode-bidi: isolate; background: var(--mock-bar); border: 1px solid var(--border);
+               border-radius: 6px; padding: 1px 7px; font-family: Consolas, monospace; font-size: 14px; }
+  .copy { margin-inline-start: 6px; border: 1px solid var(--accent); color: var(--accent); background: transparent;
+          border-radius: 6px; padding: 2px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+
+  .visual { background: var(--mock-bg); padding: 22px; display: flex; align-items: center; justify-content: center; border-inline-start: 1px solid var(--border); }
+  @media (max-width: 760px) { .visual { border-inline-start: 0; border-top: 1px solid var(--border); } }
+
+  .controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); }
+  .btn { border: 1px solid var(--border); background: var(--card); color: var(--text); border-radius: 10px;
+         padding: 10px 18px; font: inherit; cursor: pointer; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .next-hint { color: var(--muted); font-size: 14px; text-align: center; flex: 1; }
+  .next-hint b { color: var(--text); }
+
+  /* ---- mock UI (LTR, like English Chrome/Windows) ---- */
+  .mock { direction: ltr; width: 100%; max-width: 440px; background: #fff; color: #1f2937; border-radius: 10px;
+          box-shadow: 0 6px 24px rgba(0,0,0,.15); overflow: visible; font: 13px/1.4 "Segoe UI", Arial, sans-serif; position: relative; }
+  .m-bar { display: flex; align-items: center; gap: 6px; background: #eef1f5; padding: 8px; border-radius: 10px 10px 0 0; }
+  .m-url { flex: 1; background: #fff; border-radius: 16px; padding: 5px 12px; color: #374151; white-space: nowrap; overflow: hidden; }
+  .m-ico { width: 26px; height: 26px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; background: #fff; }
+  .m-ico img { width: 18px; height: 18px; border-radius: 3px; }
+  .m-body { padding: 14px; min-height: 150px; position: relative; }
+  .m-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .m-title { font-size: 17px; font-weight: 600; }
+  .m-btn { border: 1px solid #c7d2fe; color: #1d4ed8; border-radius: 16px; padding: 4px 12px; background: #fff; display: inline-block; }
+  .m-btn.solid { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; text-align: center; }
+  .m-toggle { width: 34px; height: 18px; border-radius: 9px; background: #9ca3af; position: relative; display: inline-block; vertical-align: middle; }
+  .m-toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  .m-toggle.on { background: #2563eb; }
+  .m-toggle.on::after { left: 18px; }
+  .m-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; display: flex; gap: 10px; align-items: center; margin-top: 8px; background: #fff; }
+  .m-card img { width: 34px; height: 34px; border-radius: 6px; }
+  .m-card .grow { flex: 1; }
+  .m-muted { color: #6b7280; font-size: 12px; }
+  .m-menu { position: absolute; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,.18); padding: 6px 0; min-width: 190px; z-index: 2; }
+  .m-menu div { padding: 6px 14px; }
+  .m-menu div.sep { border-top: 1px solid #e5e7eb; padding: 0; margin: 4px 0; }
+  .m-file { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; }
+  .m-file.sel { background: #dbeafe; }
+  .m-panel { border-left: 1px solid #e5e7eb; background: #f3f4f6; padding: 10px; }
+  .m-item { background: #fff; border-radius: 8px; padding: 10px; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .m-video { background: #111827; color: #fff; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; font-size: 34px; }
+  .m-dialog { border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; }
+  .m-dialog .head { background: #f3f4f6; padding: 6px 10px; font-weight: 600; }
+  .m-dialog .foot { display: flex; justify-content: flex-end; gap: 8px; padding: 8px; background: #f9fafb; border-top: 1px solid #e5e7eb; }
+
+  /* the pointer: ring + label showing exactly where to click */
+  .target { position: relative; outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 8px; animation: ring 1.4s ease-in-out infinite; }
+  @keyframes ring { 0%,100% { outline-color: rgba(249,115,22,1); } 50% { outline-color: rgba(249,115,22,.25); } }
+  .pin-label { position: absolute; z-index: 3; background: var(--ring); color: #fff; font: 600 12px/1 "Segoe UI", Arial, sans-serif;
+               padding: 6px 9px; border-radius: 6px; white-space: nowrap; direction: rtl; pointer-events: none; }
+  .pin-label.below { top: calc(100% + 10px); }
+  .pin-label.above { bottom: calc(100% + 10px); }
+  .pin-label.left { right: calc(100% + 10px); top: 50%; transform: translateY(-50%); }
+  .pin-label.below.r, .pin-label.above.r { right: 0; }
+  .pin-label.below.l, .pin-label.above.l { left: 0; }
+  .pin-label::after { content: ""; position: absolute; border: 6px solid transparent; }
+  .pin-label.below::after { bottom: 100%; border-bottom-color: var(--ring); }
+  .pin-label.above::after { top: 100%; border-top-color: var(--ring); }
+  .pin-label.below.r::after, .pin-label.above.r::after { right: 10px; }
+  .pin-label.below.l::after, .pin-label.above.l::after { left: 10px; }
+  .pin-label.inside { right: 8px; top: 50%; transform: translateY(-50%); }
+  .pin-label.inside::after { display: none; }
+  .pin-label.left::after { left: 100%; top: 50%; transform: translateY(-50%); border-left-color: var(--ring); }
+
+  footer.foot { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="icons/logo256.png" alt="MNIT">
+    <div>
+      <h1>MNIT Media Grabber — מדריך מהיר</h1>
+      <div class="sub">התקנה, שימוש ועדכון. שלב אחד בכל פעם — לחץ "הבא" כדי להמשיך.</div>
+    </div>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-text"><span id="stepOf"></span><span id="sectionName"></span></div>
+    <div class="progress"><div id="bar"></div></div>
+  </div>
+
+  <nav class="sections" id="sections"></nav>
+
+  <section class="step" id="step" aria-live="polite">
+    <div class="step-grid">
+      <div class="text" id="text"></div>
+      <div class="visual" id="visual"></div>
+    </div>
+    <div class="controls">
+      <button class="btn" id="prev">→ הקודם</button>
+      <div class="next-hint" id="nextHint"></div>
+      <button class="btn primary" id="next">הבא ←</button>
+    </div>
+  </section>
+
+  <footer class="foot">MNIT Cyber AI · כלי לשימוש אישי · הורד רק תוכן שמותר לך להוריד</footer>
+</div>
+
+<script src="guide.js"></script>
+</body>
+</html>

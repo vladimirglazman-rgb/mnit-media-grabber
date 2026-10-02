@@ -1,0 +1,5 @@
+tests/site/
+tests/gshots/
+tests/*.png
+tests/*.mp4
+*.zip
