@@ -59,3 +59,7 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   best working item per clip (json 3 > master 2 > st=video 1 > audio 0). Others kept as fallback
   (if playlist.json fails, the master shows). Test: tests PAGE=vhls4.html node ../vhtest.mjs → SHOWN 1.
 - [unverified] Real-site URL shapes guessed from memory notes; user must confirm on the real Vimeo page.
+- [ops] 2026-10-06: v1.7.2 uploaded to Chrome Web Store manually and submitted for review (auto-publish on).
+  Dashboard: https://chrome.google.com/webstore/devconsole → item → Package → Upload new package → Submit.
+- [idea] Chrome Web Store API + GitHub Action = one-tap publish from phone. API free; ~30 min desktop setup.
+  User has not decided yet.
