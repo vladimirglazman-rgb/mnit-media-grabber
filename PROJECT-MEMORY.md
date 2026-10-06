@@ -49,3 +49,13 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 - [site][stated] Site is organized by topics; /tools page is VOD/Netflix style (cards).
 - [branding][stated] Every visual must use the real MNIT logo (glass cube); no AI-generated art without it.
 - [design][stated] User designs visuals in Canva.
+
+## 2026-10-06 — v1.7.2: Vimeo showed 4 entries for 1 video
+
+- [bug-fixed] Vimeo player requests playlist.json, master playlist.m3u8 and one st=video media playlist
+  per ABR quality → each became its own list entry (user saw 4). Master's children-hiding missed them
+  when request URLs differ from the master's (extra query params).
+  Fix: items get `clip` (vimeocdn path before /v2/, minus exp=/hmac=) + `rank`; panel + badge show only the
+  best working item per clip (json 3 > master 2 > st=video 1 > audio 0). Others kept as fallback
+  (if playlist.json fails, the master shows). Test: tests PAGE=vhls4.html node ../vhtest.mjs → SHOWN 1.
+- [unverified] Real-site URL shapes guessed from memory notes; user must confirm on the real Vimeo page.

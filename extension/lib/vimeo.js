@@ -33,6 +33,33 @@ export function isVimeoJson(url, mime) {
   }
 }
 
+// All requests of one Vimeo video (playlist.json, master m3u8, per-quality media playlists) share
+// the clip path before /v2/ on vimeocdn.com (any CDN host). exp=/hmac= token segments are dropped: they can differ per URL.
+export function vimeoClip(url) {
+  try {
+    const u = new URL(url);
+    if (!isVimeoHost(u)) return null;
+    const i = u.pathname.indexOf('/v2/');
+    if (i <= 0) return null;
+    const segs = u.pathname.slice(0, i).split('/').filter((x) => x && !/^exp=|hmac=/i.test(x));
+    return segs.length ? segs.join('/') : null;
+  } catch {
+    return null;
+  }
+}
+
+// One Vimeo video = one list entry: per clip, show only the best-ranked working item
+// (playlist.json 3 > master m3u8 2 > st=video 1 > st=audio 0). The others stay stored as fallbacks.
+export function dedupeClips(items) {
+  const best = new Map();
+  for (const i of items) {
+    if (!i.clip || i.error) continue;
+    const b = best.get(i.clip);
+    if (!b || i.rank > b.rank) best.set(i.clip, i);
+  }
+  return items.filter((i) => !i.clip || i === best.get(i.clip) || (i.error && !best.has(i.clip)));
+}
+
 export function parseVimeo(json, manifestUrl) {
   if (!json || !Array.isArray(json.video) || !json.video.length) throw new HlsError('not_vimeo');
   const base = new URL(json.base_url || '', manifestUrl);

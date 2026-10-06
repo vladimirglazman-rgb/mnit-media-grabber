@@ -1,6 +1,6 @@
 import { downloadHls, HlsError } from './lib/hls.js';
 import { ensureReferer } from './lib/net.js';
-import { downloadVimeo, mergeTracks } from './lib/vimeo.js';
+import { downloadVimeo, mergeTracks, dedupeClips } from './lib/vimeo.js';
 
 const STR = {
   he: {
@@ -212,7 +212,7 @@ async function loadItems() {
 }
 
 function visibleItems() {
-  return items.filter((i) => {
+  return dedupeClips(items).filter((i) => {
     if (i.kind === 'audio' && !settings.showAudio) return false;
     if ((i.kind === 'video' || i.kind === 'audio') && i.size && i.size < settings.minSizeKB * 1024) return false;
     return true;
