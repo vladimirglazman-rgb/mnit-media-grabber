@@ -51,6 +51,7 @@ tests/
 - v1.5 — guide tab, branding, logo
 - v1.6 — Vimeo chunk fix (filter byte-range pieces)
 - v1.7 — Vimeo split HLS audio fix (vimeoRole + mergeTracks)
+- v1.7.1 — Privacy Policy + Terms of Service (docs/), ready for Chrome Web Store
 
 ## Open Improvements
 1. Keep downloading when panel is closed (offscreen document)
