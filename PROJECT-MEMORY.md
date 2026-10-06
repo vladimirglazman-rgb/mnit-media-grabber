@@ -42,3 +42,10 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 - [lovable] User is on free tier (≈1 build credit/day, code view read-only). Avoid Lovable edits;
   prefer changes that live in this repo's docs/. Lovable flagged "1 critical security issue" — unreviewed.
 - [privacy] User does not want github.com/repo links shared publicly (code copying); share mnitcyberai.com.
+- [status][stated] Published on Chrome Web Store:
+  https://chromewebstore.google.com/detail/mnit-media-grabber/aplagchkcncggiibcfchajffegnbokli — being sent to users.
+- [business][stated] Extension stays free; Pro badge is prep for a future paid tier.
+- [site][stated] Goal: all of the user's tools eventually live on mnitcyberai.com.
+- [site][stated] Site is organized by topics; /tools page is VOD/Netflix style (cards).
+- [branding][stated] Every visual must use the real MNIT logo (glass cube); no AI-generated art without it.
+- [design][stated] User designs visuals in Canva.
