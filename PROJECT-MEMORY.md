@@ -71,3 +71,5 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 - [ops] v1.7.2 is in store review (harmless, incomplete). Upload 1.7.3 next.
 - [verified] User confirmed v1.7.3 fixes the 4-entries bug on the real letsai/Vimeo page (loaded unpacked).
   Next: cancel 1.7.2 review in store → upload 1.7.3 → submit.
+- [ops] 2026-10-06: user will cancel 1.7.2 review tomorrow, then upload 1.7.3 (zip already on their PC).
+  If 1.7.2 got approved meanwhile → no cancel needed, just upload 1.7.3. Branch not merged to main yet.
