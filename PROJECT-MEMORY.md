@@ -69,3 +69,5 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   v1.7.3: clip key = video UUID; same-rank masters → newest shown (fresher token).
 - [fact] 1.7.0 → 1.7.1 changed only manifest version; the "worked in 1.7.0" was a shorter session, not code.
 - [ops] v1.7.2 is in store review (harmless, incomplete). Upload 1.7.3 next.
+- [verified] User confirmed v1.7.3 fixes the 4-entries bug on the real letsai/Vimeo page (loaded unpacked).
+  Next: cancel 1.7.2 review in store → upload 1.7.3 → submit.
