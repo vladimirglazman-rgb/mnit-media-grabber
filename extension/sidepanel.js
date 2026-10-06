@@ -606,6 +606,14 @@ $('#btnClose').addEventListener('click', async () => {
   window.close();
 });
 
+$('#btnPro').addEventListener('click', () => {
+  const btn = $('#btnPro');
+  const orig = btn.textContent;
+  btn.textContent = settings.lang === 'he' ? '⭐ בקרוב!' : '⭐ Coming soon!';
+  btn.style.opacity = '1';
+  setTimeout(() => { btn.textContent = orig; btn.style.opacity = ''; }, 2000);
+});
+
 /* ---------- live updates ---------- */
 
 chrome.tabs.onActivated.addListener(() => { refreshActiveTab(); });
