@@ -64,11 +64,13 @@ avf/vid1/media.m3u8?pathsig=a&st=video
 #EXT-X-STREAM-INF:BANDWIDTH=400000,RESOLUTION=160x90,AUDIO="aud"
 avf/vid2/media.m3u8?pathsig=a&st=video
 M
+# Player reloads the master with a new playback session (psid=…) → still the same video.
+ln -s psid=3 vh/exp=1~hmac=2/abc/psid=4
 cat > vhls4.html <<H
 <!doctype html><title>Vimeo ABR Test</title><h1>vimeo abr</h1>
 <script>
 const H='http://vod-adaptive-ak.vimeocdn.com:8123/$B/';
-(async () => { for (const u of ['../playlist.m3u8?pathsig=a', 'vid2/media.m3u8?pathsig=a&st=video&r=1', 'aud1/media.m3u8?pathsig=a&st=audio&r=1', 'vid1/media.m3u8?pathsig=a&st=video&r=2'])
+(async () => { for (const u of ['../playlist.m3u8?pathsig=a', '../../../../../../psid=4/v2/playlist/av/a749/playlist.m3u8?omit=opus', 'vid2/media.m3u8?pathsig=a&st=video&r=1', 'aud1/media.m3u8?pathsig=a&st=audio&r=1', 'vid1/media.m3u8?pathsig=a&st=video&r=2'])
   await fetch(H+u).catch(()=>{}); })();
 </script>
 H

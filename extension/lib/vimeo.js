@@ -34,15 +34,17 @@ export function isVimeoJson(url, mime) {
 }
 
 // All requests of one Vimeo video (playlist.json, master m3u8, per-quality media playlists) share
-// the clip path before /v2/ on vimeocdn.com (any CDN host). exp=/hmac= token segments are dropped: they can differ per URL.
+// the clip id before /v2/ on vimeocdn.com (any CDN host). Per-session parts differ between reloads
+// of the same video (exp=…~hmac=… token, psid=… playback session), so they are not part of the key.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export function vimeoClip(url) {
   try {
     const u = new URL(url);
     if (!isVimeoHost(u)) return null;
     const i = u.pathname.indexOf('/v2/');
     if (i <= 0) return null;
-    const segs = u.pathname.slice(0, i).split('/').filter((x) => x && !/^exp=|hmac=/i.test(x));
-    return segs.length ? segs.join('/') : null;
+    const segs = u.pathname.slice(0, i).split('/').filter((x) => x && !/^(exp|psid)=|hmac=/i.test(x));
+    return segs.find((x) => UUID_RE.test(x)) || (segs.length ? segs.join('/') : null);
   } catch {
     return null;
   }
@@ -55,7 +57,8 @@ export function dedupeClips(items) {
   for (const i of items) {
     if (!i.clip || i.error) continue;
     const b = best.get(i.clip);
-    if (!b || i.rank > b.rank) best.set(i.clip, i);
+    // Same rank: a newer manifest has a fresher token. Media playlists keep the first (it holds the audio pair).
+    if (!b || i.rank > b.rank || (i.rank === b.rank && i.rank >= 2)) best.set(i.clip, i);
   }
   return items.filter((i) => !i.clip || i === best.get(i.clip) || (i.error && !best.has(i.clip)));
 }

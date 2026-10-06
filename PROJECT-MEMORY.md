@@ -63,3 +63,9 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   Dashboard: https://chrome.google.com/webstore/devconsole → item → Package → Upload new package → Submit.
 - [idea] Chrome Web Store API + GitHub Action = one-tap publish from phone. API free; ~30 min desktop setup.
   User has not decided yet.
+- [bug-fixed] v1.7.2 still showed 4 entries on letsai. Real master URL:
+  `vimeocdn.com/exp=…~acl=…~hmac=…/<video-uuid>/psid=<session>/v2/playlist/av/primary/sub/…/prot/…/playlist.m3u8?omit=…`
+  The player re-requests the master with a NEW psid + token during long viewing (token ~78 min) → new entries.
+  v1.7.3: clip key = video UUID; same-rank masters → newest shown (fresher token).
+- [fact] 1.7.0 → 1.7.1 changed only manifest version; the "worked in 1.7.0" was a shorter session, not code.
+- [ops] v1.7.2 is in store review (harmless, incomplete). Upload 1.7.3 next.

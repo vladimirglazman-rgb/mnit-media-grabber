@@ -54,6 +54,7 @@ tests/
 - v1.7 — Vimeo split HLS audio fix (vimeoRole + mergeTracks)
 - v1.7.1 — Privacy Policy + Terms of Service (docs/), ready for Chrome Web Store
 - v1.7.2 — one Vimeo video = one list entry (vimeoClip + dedupeClips)
+- v1.7.3 — clip key = video UUID (ignores psid= playback session); fixes 4 entries on letsai
 
 ## Open Improvements
 1. Keep downloading when panel is closed (offscreen document)
