@@ -28,3 +28,17 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 4. Edit file name before download.
 5. Remux .ts → .mp4 so Windows' built-in player opens it.
 6. English version of the guide; flat 16px icon.
+
+## 2026-10-06 — Pro badge, howto page, mnitcyberai.com/tools WhatsApp preview
+
+- [ui] Non-functional "⭐ Pro" badge in sidepanel card-foot (click → "בקרוב" for 2s). Extension stays free.
+- [ops] GitHub Pages builds from branch `claude/compassionate-bohr-hcdvwg` /docs, NOT main.
+  Push docs changes to BOTH (main, then `git push origin main:claude/compassionate-bohr-hcdvwg`).
+- [og] mnitcyberai.com (Lovable) og:image on /tools → hardcoded
+  `https://vladimirglazman-rgb.github.io/mnit-media-grabber/tools-og-cover.png`.
+  Lovable CDN asset URLs (/__l5e/assets-v1/…) are NOT fetched by WhatsApp's crawler.
+- [og] WhatsApp desktop crops og:image to a center square → keep logo/icon/title in the middle 630px.
+  Keep file small (cover is ~70KB, 256-color PNG). Bust WhatsApp cache with `?v=N` on the page URL.
+- [lovable] User is on free tier (≈1 build credit/day, code view read-only). Avoid Lovable edits;
+  prefer changes that live in this repo's docs/. Lovable flagged "1 critical security issue" — unreviewed.
+- [privacy] User does not want github.com/repo links shared publicly (code copying); share mnitcyberai.com.
