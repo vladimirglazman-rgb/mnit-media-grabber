@@ -73,3 +73,9 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   Next: cancel 1.7.2 review in store → upload 1.7.3 → submit.
 - [ops] 2026-10-06: user will cancel 1.7.2 review tomorrow, then upload 1.7.3 (zip already on their PC).
   If 1.7.2 got approved meanwhile → no cancel needed, just upload 1.7.3. Branch not merged to main yet.
+
+## 2026-10-07 — v1.7.3 in store review
+
+- [ops] 1.7.2 review cancelled (⋮ menu on item page → cancel). 1.7.3 uploaded + submitted; status "pending review",
+  published = 1.7.1. Auto-publish on.
+- [open] Merge branch claude/ecstatic-rubin-0yuz5c into main.
