@@ -1,0 +1,67 @@
+# Publish the extension to the Chrome Web Store (manual, one tap from GitHub → Actions).
+# Needs repo secrets: CWS_CLIENT_ID, CWS_CLIENT_SECRET, CWS_REFRESH_TOKEN (never commit them).
+name: Publish to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      submit:
+        description: 'Submit for review after upload (uncheck = upload as draft only)'
+        type: boolean
+        default: true
+
+env:
+  PUBLISHER_ID: 15c6d2b3-c372-4b21-bc73-79ba7874cd25
+  ITEM_ID: aplagchkcncggiibcfchajffegnbokli
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build zip
+        run: |
+          VERSION=$(jq -r .version extension/manifest.json)
+          echo "Version: $VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          (cd extension && zip -qr ../extension.zip . -x '*.DS_Store')
+
+      - name: Get access token
+        env:
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: |
+          TOKEN=$(curl -sS --fail-with-body https://oauth2.googleapis.com/token \
+            -d client_id="$CLIENT_ID" -d client_secret="$CLIENT_SECRET" \
+            -d refresh_token="$REFRESH_TOKEN" -d grant_type=refresh_token | jq -r .access_token)
+          [ -n "$TOKEN" ] && [ "$TOKEN" != null ] || { echo "No access token — check the three CWS_ secrets"; exit 1; }
+          echo "::add-mask::$TOKEN"
+          echo "TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - name: Upload package
+        run: |
+          API=https://chromewebstore.googleapis.com
+          NAME=publishers/$PUBLISHER_ID/items/$ITEM_ID
+          curl -sS --fail-with-body -X POST -H "Authorization: Bearer $TOKEN" \
+            -H 'Content-Type: application/zip' --data-binary @extension.zip \
+            "$API/upload/v2/$NAME:upload" | tee upload.json
+          STATE=$(jq -r .uploadState upload.json)
+          for i in $(seq 1 20); do
+            [ "$STATE" = IN_PROGRESS ] || break
+            sleep 6
+            STATE=$(curl -sS --fail-with-body -H "Authorization: Bearer $TOKEN" "$API/v2/$NAME:fetchStatus" \
+              | tee status.json | jq -r '.lastAsyncUploadState // empty')
+          done
+          echo "Upload state: $STATE"
+          [ "$STATE" = SUCCEEDED ] || { echo "Upload did not succeed"; exit 1; }
+
+      - name: Submit for review
+        if: ${{ inputs.submit }}
+        run: |
+          curl -sS --fail-with-body -X POST -H "Authorization: Bearer $TOKEN" \
+            -H 'Content-Type: application/json' -d '{}' \
+            "https://chromewebstore.googleapis.com/v2/publishers/$PUBLISHER_ID/items/$ITEM_ID:publish"
+          echo
+          echo "Version $VERSION submitted for review. It publishes automatically after approval."

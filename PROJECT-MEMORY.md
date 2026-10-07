@@ -79,3 +79,7 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 - [ops] 1.7.2 review cancelled (⋮ menu on item page → cancel). 1.7.3 uploaded + submitted; status "pending review",
   published = 1.7.1. Auto-publish on.
 - [open] Merge branch claude/ecstatic-rubin-0yuz5c into main.
+- [ci] .github/workflows/publish-store.yml: manual "Publish to Chrome Web Store" (CWS API v2, plain curl, no 3rd-party action).
+  Secrets: CWS_CLIENT_ID / CWS_CLIENT_SECRET / CWS_REFRESH_TOKEN. PUBLISHER_ID taken from dashboard URL
+  (devconsole/<id>) — [unverified] until first run. OAuth consent screen must be "In production",
+  otherwise refresh token dies after 7 days. Not run yet; works only once merged to main.
