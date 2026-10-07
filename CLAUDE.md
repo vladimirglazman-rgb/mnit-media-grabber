@@ -29,7 +29,7 @@ tests/
   make-fixtures.sh    — builds local test media with ffmpeg
   test.mjs            — Playwright E2E: direct MP4, AES-128 HLS, fMP4 HLS
   vtest.mjs           — Playwright E2E: Vimeo playlist.json
-  vhtest.mjs          — Playwright E2E: Vimeo split HLS (st=video + st=audio)
+  vhtest.mjs          — Playwright E2E: Vimeo split HLS (st=video + st=audio); PAGE=vhls4.html = master + ABR qualities → 1 entry
   gtest.mjs           — guide UI test
 ```
 
@@ -38,6 +38,7 @@ tests/
 - `vimeoRole(url)` — pairs st=video + st=audio Vimeo HLS playlists
 - OPFS streaming — large files written to Origin Private File System, not RAM
 - `mergeTracks()` — merges fMP4 video+audio tracks into single MP4
+- `vimeoClip(url)` / `dedupeClips(items)` — one entry per Vimeo clip (json > master > st=video > st=audio)
 - `ensureReferer()` — sets Referer via declarativeNetRequest session rules
 
 ## OFF-LIMITS
@@ -52,6 +53,8 @@ tests/
 - v1.6 — Vimeo chunk fix (filter byte-range pieces)
 - v1.7 — Vimeo split HLS audio fix (vimeoRole + mergeTracks)
 - v1.7.1 — Privacy Policy + Terms of Service (docs/), ready for Chrome Web Store
+- v1.7.2 — one Vimeo video = one list entry (vimeoClip + dedupeClips)
+- v1.7.3 — clip key = video UUID (ignores psid= playback session); fixes 4 entries on letsai
 
 ## Open Improvements
 1. Keep downloading when panel is closed (offscreen document)

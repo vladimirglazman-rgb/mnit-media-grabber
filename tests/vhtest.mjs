@@ -7,7 +7,7 @@ let [sw] = ctx.serviceWorkers(); if (!sw) sw = await ctx.waitForEvent('servicewo
 const id = sw.url().split('/')[2];
 await new Promise(r=>setTimeout(r,1500));
 const page = await ctx.newPage();
-await page.goto('http://localhost:8123/vhls.html'); await page.waitForTimeout(2500);
+await page.goto(`http://localhost:8123/${process.env.PAGE || 'vhls.html'}`); await page.waitForTimeout(2500);
 const tabId = await sw.evaluate(async () => (await chrome.tabs.query({url:'http://localhost:8123/*'}))[0].id);
 const data = await sw.evaluate(async (t) => (await chrome.storage.session.get('tab_'+t))['tab_'+t], tabId);
 console.log('DETECTED', JSON.stringify(data.items.map(i=>({kind:i.kind,url:i.url.split('/').pop(),variants:i.variants?.map(v=>v.resolution),dur:i.duration}))));
@@ -17,6 +17,7 @@ panel.on('pageerror', e => errors.push(e.message)); panel.on('console', m => m.t
 await panel.addInitScript((t) => { const q = chrome.tabs.query.bind(chrome.tabs); chrome.tabs.query = async (o) => o.active ? [await chrome.tabs.get(t)] : q(o); }, tabId);
 await panel.goto(`chrome-extension://${id}/sidepanel.html`); await panel.waitForTimeout(1000);
 await panel.setViewportSize({width:480,height:640});
+console.log('SHOWN', await panel.locator('.item').count(), 'BADGE', await sw.evaluate((t) => chrome.action.getBadgeText({ tabId: t }), tabId));
 const t0=Date.now();
 await panel.locator('.item .btn.primary').first().click();
 await panel.waitForFunction(() => /✓|נכשל/.test(document.querySelector('.item .status').textContent), null, {timeout:120000});

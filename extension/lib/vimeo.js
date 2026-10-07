@@ -33,6 +33,36 @@ export function isVimeoJson(url, mime) {
   }
 }
 
+// All requests of one Vimeo video (playlist.json, master m3u8, per-quality media playlists) share
+// the clip id before /v2/ on vimeocdn.com (any CDN host). Per-session parts differ between reloads
+// of the same video (exp=…~hmac=… token, psid=… playback session), so they are not part of the key.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function vimeoClip(url) {
+  try {
+    const u = new URL(url);
+    if (!isVimeoHost(u)) return null;
+    const i = u.pathname.indexOf('/v2/');
+    if (i <= 0) return null;
+    const segs = u.pathname.slice(0, i).split('/').filter((x) => x && !/^(exp|psid)=|hmac=/i.test(x));
+    return segs.find((x) => UUID_RE.test(x)) || (segs.length ? segs.join('/') : null);
+  } catch {
+    return null;
+  }
+}
+
+// One Vimeo video = one list entry: per clip, show only the best-ranked working item
+// (playlist.json 3 > master m3u8 2 > st=video 1 > st=audio 0). The others stay stored as fallbacks.
+export function dedupeClips(items) {
+  const best = new Map();
+  for (const i of items) {
+    if (!i.clip || i.error) continue;
+    const b = best.get(i.clip);
+    // Same rank: a newer manifest has a fresher token. Media playlists keep the first (it holds the audio pair).
+    if (!b || i.rank > b.rank || (i.rank === b.rank && i.rank >= 2)) best.set(i.clip, i);
+  }
+  return items.filter((i) => !i.clip || i === best.get(i.clip) || (i.error && !best.has(i.clip)));
+}
+
 export function parseVimeo(json, manifestUrl) {
   if (!json || !Array.isArray(json.video) || !json.video.length) throw new HlsError('not_vimeo');
   const base = new URL(json.base_url || '', manifestUrl);

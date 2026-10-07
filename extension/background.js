@@ -1,6 +1,6 @@
 import { parseM3u8, fetchText } from './lib/hls.js';
 import { ensureReferer } from './lib/net.js';
-import { isVimeoManifest, isVimeoJson, isVimeoRangePiece, parseVimeo } from './lib/vimeo.js';
+import { isVimeoManifest, isVimeoJson, isVimeoRangePiece, parseVimeo, vimeoClip, dedupeClips } from './lib/vimeo.js';
 
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
 
@@ -71,7 +71,8 @@ async function getTab(id) {
 }
 async function setTab(id, data) {
   await chrome.storage.session.set({ [tabKey(id)]: data });
-  chrome.action.setBadgeText({ tabId: id, text: data.items.length ? String(data.items.length) : '' }).catch(() => {});
+  const n = dedupeClips(data.items).length;
+  chrome.action.setBadgeText({ tabId: id, text: n ? String(n) : '' }).catch(() => {});
 }
 
 async function onMedia(tabId, url, mime, size, fallback) {
@@ -92,6 +93,12 @@ async function onMedia(tabId, url, mime, size, fallback) {
     }
     const item = { id, url, kind, mime: (mime || '').split(';')[0], size: size || 0, time: Date.now() };
     const v = kind === 'hls' ? vimeoRole(url) : null;
+    // Only a named manifest outranks HLS: any other vimeocdn json may turn out not to be one.
+    const clip = kind === 'hls' || isVimeoManifest(url) ? vimeoClip(url) : null;
+    if (clip) {
+      item.clip = clip;
+      item.rank = kind === 'vimeo' ? 3 : !v ? 2 : v.role === 'video' ? 1 : 0;
+    }
     if (v) {
       item.role = v.role;
       item.group = v.group;
@@ -143,6 +150,10 @@ async function enrichVimeo(tabId, id, url) {
     } else {
       const it = t.items.find((i) => i.id === id);
       if (!it) return;
+      if (!it.clip) {
+        it.clip = vimeoClip(url);
+        it.rank = 3;
+      }
       it.variants = m.video.map((v) => ({ resolution: v.width ? `${v.width}x${v.height}` : `${v.height}p`, bandwidth: v.bitrate }));
       it.duration = m.duration;
       it.hasAudio = m.audio.length > 0;
