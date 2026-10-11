@@ -5,6 +5,9 @@ MNIT Media Grabber — personal Chrome extension for detecting and downloading v
 Owner: vladimirglazman@gmail.com
 GitHub: vladimirglazman-rgb/mnit-media-grabber
 
+## Communication
+- All text to the user in simple Hebrew, always — including short progress updates between tool calls. Code, commits and docs stay in English.
+
 ## Architecture
 - Chrome Extension Manifest V3 (MV3)
 - Side Panel UI (chrome.sidePanel API)
