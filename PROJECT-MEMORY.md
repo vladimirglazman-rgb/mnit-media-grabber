@@ -94,3 +94,4 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   Dialog mentioned staging: if it shows "approved, ready to publish" instead of auto-publishing, press Publish
   within 30 days. Store upload = the user's preferred update path (not load-unpacked).
 - [stated] 2026-10-11: user requires Hebrew-only replies, always (incl. progress updates). Added to CLAUDE.md.
+- [verified] 2026-10-11: v1.7.4 (loaded unpacked) on the real Suno page shows the 'encrypted' message and saves nothing. Earlier .m4a.crdownload in Downloads/Media Grabber came from the old 1.7.3. Pending: store approval of 1.7.4; quick real-site check that a normal direct file still downloads.
