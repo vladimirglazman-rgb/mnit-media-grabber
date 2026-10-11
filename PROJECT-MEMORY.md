@@ -79,3 +79,14 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
 - [ops] 1.7.2 review cancelled (⋮ menu on item page → cancel). 1.7.3 uploaded + submitted; status "pending review",
   published = 1.7.1. Auto-publish on.
 - [open] Merge branch claude/ecstatic-rubin-0yuz5c into main.
+
+## 2026-10-11 — v1.7.4: refuse encrypted / non-media direct downloads
+
+- [bug-fixed] Suno song (d2lwuy8qc234o3.cloudfront.net, .m4a) downloaded but would not play. Analysis of the
+  user's file: no container header at all, entropy 7.9999 bits/byte from byte 0 → encrypted; Suno's player
+  decrypts at playback. Not a download bug. Decision: do NOT build decryption (circumvention, legal + store risk).
+- [fix] v1.7.4 downloadDirect (video/audio only) fetches bytes 0-4095 first: known media signature → download
+  as before; starts with '<' → "notMedia"; no signature + entropy > 7.5 → "encrypted". Any probe error → download
+  as before (fail-open). HLS / Vimeo paths untouched. Verified: 18 real formats pass, test/vtest/vhtest green,
+  new tests/etest.mjs PASS.
+- [stated] User wants to use the extension from the phone too (asked 2026-10-11).

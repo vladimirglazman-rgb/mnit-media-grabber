@@ -29,6 +29,7 @@ tests/
   make-fixtures.sh    — builds local test media with ffmpeg
   test.mjs            — Playwright E2E: direct MP4, AES-128 HLS, fMP4 HLS
   vtest.mjs           — Playwright E2E: Vimeo playlist.json
+  etest.mjs           — Playwright E2E: encrypted .m4a is refused, nothing saved
   vhtest.mjs          — Playwright E2E: Vimeo split HLS (st=video + st=audio); PAGE=vhls4.html = master + ABR qualities → 1 entry
   gtest.mjs           — guide UI test
 ```
@@ -55,6 +56,7 @@ tests/
 - v1.7.1 — Privacy Policy + Terms of Service (docs/), ready for Chrome Web Store
 - v1.7.2 — one Vimeo video = one list entry (vimeoClip + dedupeClips)
 - v1.7.3 — clip key = video UUID (ignores psid= playback session); fixes 4 entries on letsai
+- v1.7.4 — direct downloads sniff the first 4KB; encrypted (Suno) or HTML responses are refused with a message instead of saving an unplayable file
 
 ## Open Improvements
 1. Keep downloading when panel is closed (offscreen document)

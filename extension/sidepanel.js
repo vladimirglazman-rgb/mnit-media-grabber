@@ -18,6 +18,8 @@ const STR = {
     sentToDownloads: 'נשלח להורדות ✓', done: 'הושלם ✓', cancelled: 'בוטל',
     failed: 'נכשל: {e}',
     drm: 'מוגן בהעתקה (DRM) — אי אפשר להוריד.',
+    encrypted: 'הקובץ מוצפן על ידי האתר, ושום נגן לא יפתח אותו. השתמש בכפתור ההורדה של האתר עצמו.',
+    notMedia: 'השרת החזיר דף אינטרנט במקום קובץ מדיה. רענן את הדף, הפעל שוב ונסה שוב.',
     dash: 'פורמט DASH — לא נתמך בגרסה הזו.',
     live: 'שידור חי — יירד רק מה שזמין כרגע.',
     sepAudio: 'הקול נשמר בקובץ נפרד.',
@@ -65,6 +67,8 @@ const STR = {
     sentToDownloads: 'Sent to downloads ✓', done: 'Done ✓', cancelled: 'Cancelled',
     failed: 'Failed: {e}',
     drm: 'Copy-protected (DRM) — cannot be downloaded.',
+    encrypted: 'The site encrypts this file, so no player can open it. Use the site\'s own download button.',
+    notMedia: 'The server returned a web page instead of a media file. Reload the page, play it again and retry.',
     dash: 'DASH format — not supported in this version.',
     live: 'Live stream — only what is available now will be saved.',
     sepAudio: 'Audio is a separate track — two files will be saved.',
@@ -444,9 +448,63 @@ async function startDownload(item, variantIndex) {
   }
 }
 
+// Fails open: anything we can't read or don't recognise is downloaded as before.
+function sniffMedia(b) {
+  if (b.length < 16) return 'ok';
+  const at = (o, s) => [...s].every((c, i) => b[o + i] === c.charCodeAt(0));
+  if (['ftyp', 'styp', 'moov', 'moof', 'mdat', 'free', 'skip', 'wide', 'sidx', 'pnot'].some((s) => at(4, s))) return 'ok';
+  if (['ID3', 'OggS', 'fLaC', 'RIFF', 'FLV', '#EXTM3U'].some((s) => at(0, s))) return 'ok';
+  if (b[0] === 0x1a && b[1] === 0x45 && b[2] === 0xdf && b[3] === 0xa3) return 'ok'; // Matroska / WebM
+  if (b[0] === 0xff && (b[1] & 0xe0) === 0xe0) return 'ok'; // MP3 / ADTS AAC frame sync
+  if (b[0] === 0x47) return 'ok'; // MPEG-TS
+  if (b[0] === 0 && b[1] === 0 && b[2] === 1 && b[3] === 0xba) return 'ok'; // MPEG-PS
+  if (b[0] === 0x30 && b[1] === 0x26 && b[2] === 0xb2 && b[3] === 0x75) return 'ok'; // ASF / WMV
+  let i = at(0, '\xef\xbb\xbf') ? 3 : 0;
+  while (i < b.length && (b[i] === 0x20 || b[i] === 0x09 || b[i] === 0x0a || b[i] === 0x0d)) i++;
+  if (b[i] === 0x3c) return 'page';
+  if (b.length < 1024) return 'ok';
+  const count = new Array(256).fill(0);
+  for (const x of b) count[x]++;
+  let bits = 0;
+  for (const c of count) if (c) bits -= (c / b.length) * Math.log2(c / b.length);
+  return bits > 7.5 ? 'encrypted' : 'ok';
+}
+
+async function probeDirect(url) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const r = await fetch(url, { headers: { Range: 'bytes=0-4095' }, credentials: 'include', signal: ctrl.signal });
+    if (!r.ok || !r.body) return 'ok';
+    const reader = r.body.getReader();
+    const buf = new Uint8Array(4096);
+    let n = 0;
+    while (n < buf.length) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const k = Math.min(value.length, buf.length - n);
+      buf.set(value.subarray(0, k), n);
+      n += k;
+    }
+    return sniffMedia(buf.subarray(0, n));
+  } catch {
+    return 'ok';
+  } finally {
+    clearTimeout(timer);
+    ctrl.abort();
+  }
+}
+
 async function downloadDirect(item, title, pageUrl) {
   setJob(item.id, { running: true, pct: null, text: t('starting'), cls: '' });
   await ensureReferer(item.url, pageUrl);
+  if (item.kind === 'video' || item.kind === 'audio') {
+    const verdict = await probeDirect(item.url);
+    if (verdict !== 'ok') {
+      setJob(item.id, { running: false, text: t(verdict === 'encrypted' ? 'encrypted' : 'notMedia'), cls: 'err' });
+      return;
+    }
+  }
   const filename = buildPath(title, extOf(item));
   const downloadId = await chrome.downloads.download({ url: item.url, filename, saveAs: settings.saveAs, conflictAction: 'uniquify' });
   await addHistory({ url: item.url, filename: filename.split('/').pop(), downloadId, size: item.size });

@@ -74,4 +74,7 @@ const H='http://vod-adaptive-ak.vimeocdn.com:8123/$B/';
   await fetch(H+u).catch(()=>{}); })();
 </script>
 H
+# Encrypted audio (as Suno serves): random bytes behind an .m4a name must be refused, not saved.
+head -c 3000000 /dev/urandom > enc.m4a
+printf '<!doctype html><title>Encrypted Audio Page</title><audio src="enc.m4a" controls></audio>\n' > enc.html
 echo "fixtures ready"
