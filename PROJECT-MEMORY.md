@@ -90,3 +90,6 @@ Append-only. Newest at the bottom. Keep under ~200 lines, then start PROJECT-MEM
   as before (fail-open). HLS / Vimeo paths untouched. Verified: 18 real formats pass, test/vtest/vhtest green,
   new tests/etest.mjs PASS.
 - [stated] User wants to use the extension from the phone too (asked 2026-10-11).
+- [ops] 2026-10-11: 1.7.3 was live (published, unlisted). 1.7.4 zip uploaded + submitted; status "pending review".
+  Dialog mentioned staging: if it shows "approved, ready to publish" instead of auto-publishing, press Publish
+  within 30 days. Store upload = the user's preferred update path (not load-unpacked).
